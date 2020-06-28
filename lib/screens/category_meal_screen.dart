@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+import 'package:meal_app/models/meal.dart';
+
+import '../widgets/meal_item.dart';
+
+class CategoryMealsScreen extends StatefulWidget {
+  static const routeName = 'category-meals';
+  List<Meal> avaliableMeals;
+
+  CategoryMealsScreen(this.avaliableMeals);
+
+  @override
+  _CategoryMealsScreenState createState() => _CategoryMealsScreenState();
+}
+
+class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
+  String categoryTitle;
+  List<Meal> displayedMeals;
+  var _loadedInitDate = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_loadedInitDate) {
+      final routeArgs =
+          ModalRoute.of(context).settings.arguments as Map<String, String>;
+      categoryTitle = routeArgs['title'];
+      final categoryId = routeArgs['id'];
+      displayedMeals = widget.avaliableMeals.where((meal) {
+        return meal.categories.contains(categoryId);
+      }).toList();
+      _loadedInitDate = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(categoryTitle),
+        ),
+        body: ListView.builder(
+          itemBuilder: (ctx, index) {
+            return MealItem(
+              id: displayedMeals[index].id,
+              title: displayedMeals[index].title,
+              imageUrl: displayedMeals[index].imageUrl,
+              duration: displayedMeals[index].duration,
+              affordability: displayedMeals[index].affordability,
+              complexity: displayedMeals[index].complexity,
+              
+            );
+          },
+          itemCount: displayedMeals.length,
+        ));
+  }
+}
